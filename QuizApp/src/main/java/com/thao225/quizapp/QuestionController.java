@@ -5,6 +5,10 @@
 package com.thao225.quizapp;
 
 import com.thao225.pojo.Category;
+import com.thao225.pojo.Level;
+import com.thao225.services.CategoryServices;
+import com.thao225.services.LevelServices;
+import com.thao225.utils.JdbcConnector;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,31 +29,20 @@ import javafx.scene.control.ComboBox;
  * @author admin
  */
 public class QuestionController implements Initializable {
-    @FXML private ComboBox<Category> cbCates;
+    @FXML private ComboBox<Category> cbCates;    
+    @FXML private ComboBox<Level> cbLevels;
+
+    private static final CategoryServices cateServices=new CategoryServices();
+    private static final LevelServices levelServices=new LevelServices();
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            
-            Connection conn=DriverManager.getConnection("jdbc:mysql://localhost/quizzdb","root","root");
-            
-            Statement stm =conn.createStatement();
-            ResultSet rs= stm.executeQuery("SELECT * FROM category");
-            
-            List<Category> cates=new ArrayList<>();
-            while(rs.next()){
-                int id=rs.getInt("id");
-                String name=rs.getString("name");
-                
-                Category c= new Category(id,name);
-                cates.add(c);
-            }
-            conn.close();
-            this.cbCates.setItems(FXCollections.observableList(cates));
-        } catch (ClassNotFoundException|SQLException ex) {
+            this.cbCates.setItems(FXCollections.observableList(cateServices.getCase()));
+            this.cbLevels.setItems(FXCollections.observableList(levelServices.getLevel()));
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }    
